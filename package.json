@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "apply-db-schema": "docker exec -i task-mate-postgres-1 sh -c 'PGPASSWORD=\"$POSTGRES_PASSWORD\" psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"' < db/schema.sql"
+    "apply-db-schema": "docker exec -i task-mate-postgres-1 sh -c 'PGPASSWORD=\"$POSTGRES_PASSWORD\" psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"' < db/schema.sql",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "@types/node": "18.15.10",
@@ -21,6 +22,13 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "serverless-postgres": "^2.0.2",
+    "sql-template-tag": "^5.0.3",
     "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
+    "@graphql-codegen/typescript-resolvers": "3.1.1",
+    "@graphql-codegen/typescript": "3.0.2"
   }
 }
