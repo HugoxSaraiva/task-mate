@@ -1,9 +1,22 @@
 import { createYoga, createSchema } from "graphql-yoga"
 import type { NextApiRequest, NextApiResponse } from "next"
+import psql from "serverless-postgres"
 
-type ServerContext = {
+interface ServerContext {
   req: NextApiRequest
   res: NextApiResponse
+}
+
+type Context = Awaited<ReturnType<typeof context>>
+
+type Resolvers<TContext = any> = {
+  [parentKey: string]: {
+    [fieldKey: string]: (
+      parent: unknown,
+      args: unknown,
+      context: TContext
+    ) => any
+  }
 }
 
 const typeDefs = `
@@ -44,23 +57,29 @@ const typeDefs = `
   }
 `
 
-const resolvers = {
+const resolvers: Resolvers<Context> = {
   Query: {
-    tasks(parent: unknown, args: unknown, context: ServerContext) {
+    async tasks(parent, args, { db }) {
+      await db.connect()
+      const dbQueryResult = (await db.query(
+        "SELECT 'HELLO WORLD' AS hello_world;"
+      )) as { rows: { hello_word: string }[] }
+      const result = dbQueryResult.rows[0]
+      await db.clean()
       return []
     },
-    task(parent: unknown, args: unknown, context: ServerContext) {
+    task(parent, args, context) {
       return null
     },
   },
   Mutation: {
-    createTask(parent: unknown, args: unknown, context: ServerContext) {
+    createTask(parent, args, context) {
       return null
     },
-    updateTask(parent: unknown, args: unknown, context: ServerContext) {
+    updateTask(parent, args, context) {
       return null
     },
-    deleteTask(parent: unknown, args: unknown, context: ServerContext) {
+    deleteTask(parent, args, context) {
       return null
     },
   },
@@ -78,8 +97,23 @@ export const config = {
   },
 }
 
+const db = new psql({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: Number(process.env.DB_PORT),
+  debug: true,
+  delayMs: 3000,
+})
+
+const context = () => {
+  return { db }
+}
+
 export default createYoga<ServerContext>({
   schema,
   // Needed to be defined explicitly because our endpoint lives at a different path other than `/graphql`
   graphqlEndpoint: "/api/graphql",
+  context,
 })

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "apply-db-schema": "docker exec -i task-mate-postgres-1 sh -c 'PGPASSWORD=\"$POSTGRES_PASSWORD\" psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"' < db/schema.sql"
   },
   "dependencies": {
     "@types/node": "18.15.10",
@@ -19,6 +20,7 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "serverless-postgres": "^2.0.2",
     "typescript": "5.0.2"
   }
 }
