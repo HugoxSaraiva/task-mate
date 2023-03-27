@@ -1,5 +1,10 @@
-import React, { useEffect } from "react"
-import { Task, useDeleteTaskMutation } from "../../generated/graphql-frontend"
+import React, { useEffect, useState } from "react"
+import {
+  Task,
+  TaskStatus,
+  useDeleteTaskMutation,
+  useUpdateTaskMutation,
+} from "../../generated/graphql-frontend"
 import Link from "next/link"
 import { Reference } from "@apollo/client"
 
@@ -28,6 +33,24 @@ const TaskListItem: React.FC<Props> = ({ task }) => {
       }
     },
   })
+
+  useEffect(() => {
+    if (error) {
+      alert("An error occurred, please try again")
+    }
+  }, [error])
+
+  const [status, setStatus] = useState(task.status)
+
+  const [updateTask, { loading: updateTaskLoading, error: updateTaskError }] =
+    useUpdateTaskMutation({ errorPolicy: "all" })
+
+  useEffect(() => {
+    if (updateTaskError) {
+      alert("An error occurred, please try again")
+    }
+  }, [updateTaskError])
+
   const handleDelete: React.MouseEventHandler<HTMLButtonElement> = async (
     e
   ) => {
@@ -39,17 +62,34 @@ const TaskListItem: React.FC<Props> = ({ task }) => {
     }
   }
 
-  useEffect(() => {
-    if (error) {
-      alert("An error occurred, please try again")
-    }
-  }, [error])
+  const handleStatusChange: React.ChangeEventHandler<HTMLInputElement> = async (
+    e
+  ) => {
+    const newStatus = e.target.checked
+      ? TaskStatus.Completed
+      : TaskStatus.Active
+    try {
+      await updateTask({
+        variables: { input: { id: String(task.id), status: newStatus } },
+      })
+      setStatus(newStatus)
+    } catch (error) {}
+  }
 
   return (
     <li
       className="task-list-item"
       key={task.id}
     >
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          onChange={handleStatusChange}
+          checked={status == TaskStatus.Completed}
+          disabled={updateTaskLoading}
+        ></input>
+        <span className="checkbox-mark">&#10003;</span>
+      </label>
       <Link
         key={task.id}
         href="/update/[id]"
