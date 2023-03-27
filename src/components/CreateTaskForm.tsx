@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useCreateTaskMutation } from "../../generated/graphql-frontend"
 
 interface Props {
-  onSuccess: () => void
+  onSuccess?: () => void
 }
 
 const CreateTaskForm: React.FC<Props> = ({ onSuccess }) => {
@@ -10,7 +10,9 @@ const CreateTaskForm: React.FC<Props> = ({ onSuccess }) => {
 
   const [createTask, { loading, error }] = useCreateTaskMutation({
     onCompleted: () => {
-      onSuccess()
+      if (onSuccess) {
+        onSuccess()
+      }
       setTitle("")
     },
   })
