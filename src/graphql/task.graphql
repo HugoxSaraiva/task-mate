@@ -1,0 +1,7 @@
+query Task($id: ID!) {
+  task(id: $id) {
+    id
+    status
+    title
+  }
+}
