@@ -76,7 +76,7 @@ export const resolvers: Resolvers<Context> = {
         sql`UPDATE tasks SET ${join(
           [
             title ? sql`title=${title}` : empty,
-            title ? ` , ` : empty,
+            title && status ? ` , ` : empty,
             status ? sql`task_status=${status}` : empty,
           ],
           " "
