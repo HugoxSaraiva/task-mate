@@ -6,23 +6,21 @@ import {
   useTasksQuery,
 } from "../../generated/graphql-frontend"
 import TaskList from "@/components/TaskList"
+import CreateTaskForm from "@/components/CreateTaskForm"
 
 const Home = () => {
-  const { loading, error, data } = useTasksQuery()
+  const { loading, error, data, refetch } = useTasksQuery()
   const tasks = data?.tasks
   return (
     <div>
       <Head>
         <title>Tasks</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        />
         <link
           rel="icon"
           href="/favicon.ico"
         />
       </Head>
+      <CreateTaskForm onSuccess={refetch}></CreateTaskForm>
       {loading ? (
         <div>Loading tasks...</div>
       ) : error ? (
