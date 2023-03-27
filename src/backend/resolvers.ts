@@ -38,7 +38,7 @@ export const resolvers: Resolvers<Context> = {
         db,
         sql`SELECT id, title, task_status FROM tasks ${
           status ? sql`WHERE task_status = ${status}` : empty
-        } ORDER BY id ASC;`
+        } ORDER BY id DESC;`
       )
       return tasks.map((task) => ({
         id: task.id,

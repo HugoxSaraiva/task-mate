@@ -11,10 +11,11 @@ import {
 import { useRouter } from "next/router"
 import Error from "next/error"
 import UpdateTaskForm from "@/components/UpdateTaskForm"
+import { getStringFromParam } from "@/lib/utils"
 
 const UpdateTask = () => {
   const router = useRouter()
-  const id = typeof router.query.id === "string" ? router.query.id : undefined
+  const id = getStringFromParam(router.query.id)
   if (!id) {
     return <Error statusCode={404} />
   }
@@ -35,8 +36,7 @@ const UpdateTask = () => {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const id =
-    typeof context.params?.id === "string" ? context.params?.id : undefined
+  const id = getStringFromParam(context.params?.id)
   if (id) {
     const apolloClient = initializeApollo()
     await apolloClient.query<TaskQuery, TaskQueryVariables>({

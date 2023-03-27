@@ -100,7 +100,9 @@ export type TaskQueryVariables = Exact<{
 
 export type TaskQuery = { __typename?: 'Query', task?: { __typename?: 'Task', id: number, status: TaskStatus, title: string } | null };
 
-export type TasksQueryVariables = Exact<{ [key: string]: never; }>;
+export type TasksQueryVariables = Exact<{
+  status?: InputMaybe<TaskStatus>;
+}>;
 
 
 export type TasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', id: number, status: TaskStatus, title: string }> };
@@ -221,8 +223,8 @@ export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = Apollo.QueryResult<TaskQuery, TaskQueryVariables>;
 export const TasksDocument = gql`
-    query Tasks {
-  tasks {
+    query Tasks($status: TaskStatus) {
+  tasks(status: $status) {
     id
     status
     title
@@ -242,6 +244,7 @@ export const TasksDocument = gql`
  * @example
  * const { data, loading, error } = useTasksQuery({
  *   variables: {
+ *      status: // value for 'status'
  *   },
  * });
  */
