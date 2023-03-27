@@ -5,9 +5,10 @@ import {
   TasksQuery,
   useTasksQuery,
 } from "../../generated/graphql-frontend"
+import TaskList from "@/components/TaskList"
 
 const Home = () => {
-  const { data } = useTasksQuery()
+  const { loading, error, data } = useTasksQuery()
   const tasks = data?.tasks
   return (
     <div>
@@ -22,15 +23,15 @@ const Home = () => {
           href="/favicon.ico"
         />
       </Head>
-      {tasks &&
-        tasks.length > 0 &&
-        tasks.map((task) => {
-          return (
-            <div key={task.id}>
-              {task.id} - {task.title} ({task.status})
-            </div>
-          )
-        })}
+      {loading ? (
+        <div>Loading tasks...</div>
+      ) : error ? (
+        <div>An error occurred.</div>
+      ) : tasks && tasks.length > 0 ? (
+        <TaskList tasks={tasks}></TaskList>
+      ) : (
+        <div className="no-tasks-message">You've got no tasks</div>
+      )}
     </div>
   )
 }
