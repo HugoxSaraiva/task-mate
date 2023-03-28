@@ -11,20 +11,20 @@ import CreateTaskForm from "../components/CreateTaskForm"
 import TaskFilter from "../components/TaskFilter"
 import { useRouter } from "next/router"
 import { TaskStatus } from "../../generated/graphql-frontend"
-import Error from "next/error"
 import { GetServerSideProps } from "next"
 import { useRef, useEffect } from "react"
-import { getStringFromParam } from "@/lib/utils"
+import { getStringFromParamArray } from "@/lib/utils"
+import { Custom404 } from "./404"
 
 const isTaskStatus = (value: string): value is TaskStatus =>
   Object.values(TaskStatus).includes(value as TaskStatus)
 
 export default function Home() {
   const router = useRouter()
-  const status = getStringFromParam(router.query.status)
+  const status = getStringFromParamArray(router.query.status)
 
   if (status !== undefined && !isTaskStatus(status)) {
-    return <Error statusCode={404} />
+    return <Custom404 />
   }
 
   const prevStatus = useRef(status)
@@ -65,7 +65,7 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const status = getStringFromParam(context.params?.status)
+  const status = getStringFromParamArray(context.params?.status)
 
   if (status === undefined || isTaskStatus(status)) {
     const apolloClient = initializeApollo()
