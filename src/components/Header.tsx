@@ -204,6 +204,8 @@ export default function Header() {
                 className="h-8 w-auto"
                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                 alt=""
+                width={47}
+                height={40}
               />
             </a>
             <button
