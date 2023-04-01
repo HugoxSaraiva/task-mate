@@ -23,21 +23,21 @@ export default function Home() {
   const router = useRouter()
   const status = getStringFromParamArray(router.query.status)
 
-  if (status !== undefined && !isTaskStatus(status)) {
-    return <Custom404 />
-  }
-
   const prevStatus = useRef(status)
-
   useEffect(() => {
     prevStatus.current = status
   }, [status])
 
   const result = useTasksQuery({
-    variables: { status },
+    variables: { status: (status as TaskStatus | undefined) ?? undefined },
     fetchPolicy:
       prevStatus.current === status ? "cache-first" : "cache-and-network",
   })
+
+  if (status !== undefined && !isTaskStatus(status)) {
+    return <Custom404 />
+  }
+
   const tasks = result.data?.tasks
 
   return (
@@ -57,7 +57,7 @@ export default function Home() {
       ) : tasks && tasks.length > 0 ? (
         <TaskList tasks={tasks} />
       ) : (
-        <p className="no-tasks-message">You've got no tasks.</p>
+        <p className="no-tasks-message">You&apos;ve got no tasks.</p>
       )}
       <TaskFilter status={status} />
     </div>
