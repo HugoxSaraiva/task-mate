@@ -1,5 +1,7 @@
+import Image from "next/image"
 import Link from "next/link"
 import React from "react"
+import Header from "./Header"
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -8,9 +10,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         className="logo"
         href="/"
       >
-        <img
+        <Image
           src="/logo.png"
           alt="logo"
+          width={200}
+          height={200}
         />
       </Link>
       {children}

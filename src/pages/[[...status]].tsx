@@ -1,10 +1,10 @@
 import Head from "next/head"
 import { initializeApollo } from "../lib/client"
 import {
-  useTasksQuery,
   TasksQuery,
   TasksDocument,
   TasksQueryVariables,
+  useTasksQuery,
 } from "../../generated/graphql-frontend"
 import TaskList from "../components/TaskList"
 import CreateTaskForm from "../components/CreateTaskForm"
@@ -14,7 +14,8 @@ import { TaskStatus } from "../../generated/graphql-frontend"
 import { GetServerSideProps } from "next"
 import { useRef, useEffect } from "react"
 import { getStringFromParamArray } from "@/lib/utils"
-import { Custom404 } from "./404"
+import Custom404 from "./404"
+import QueryResult from "@/components/QueryResult"
 
 const isTaskStatus = (value: string): value is TaskStatus =>
   Object.values(TaskStatus).includes(value as TaskStatus)
@@ -28,18 +29,14 @@ export default function Home() {
     prevStatus.current = status
   }, [status])
 
-  const result = useTasksQuery({
+  const { refetch, error, loading, data } = useTasksQuery({
     variables: { status: (status as TaskStatus | undefined) ?? undefined },
     fetchPolicy:
       prevStatus.current === status ? "cache-first" : "cache-and-network",
   })
-
   if (status !== undefined && !isTaskStatus(status)) {
     return <Custom404 />
   }
-
-  const tasks = result.data?.tasks
-
   return (
     <div>
       <Head>
@@ -48,17 +45,19 @@ export default function Home() {
           rel="icon"
           href="/favicon.ico"
         />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1"
+        />
       </Head>
-      <CreateTaskForm onSuccess={result.refetch} />
-      {result.loading && !tasks ? (
-        <p>Loading tasks...</p>
-      ) : result.error ? (
-        <p>An error occurred.</p>
-      ) : tasks && tasks.length > 0 ? (
-        <TaskList tasks={tasks} />
-      ) : (
-        <p className="no-tasks-message">You&apos;ve got no tasks.</p>
-      )}
+      <CreateTaskForm onSuccess={refetch} />
+      <QueryResult
+        error={error}
+        loading={loading}
+        data={data}
+      >
+        <TaskList tasks={data?.tasks!} />
+      </QueryResult>
       <TaskFilter status={status} />
     </div>
   )
