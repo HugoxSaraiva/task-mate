@@ -1,0 +1,56 @@
+service: next-js-dynamodb-project
+frameworkVersion: "3"
+
+plugins:
+  - serverless-offline
+
+custom:
+  tableName: "tasks-table-${sls:stage}"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [TasksTable, Arn]
+  environment:
+    TASKS_TABLE: ${self:custom.tableName}
+
+functions:
+  app:
+    handler: lambda.handler
+    memorySize: 256
+    events:
+      - http:
+          method: ANY
+          path: /
+          contentHandling: CONVERT_TO_BINARY
+      - http:
+          method: ANY
+          path: "{proxy+}"
+          contentHandling: CONVERT_TO_BINARY
+
+resources:
+  Resources:
+    TasksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}
+        DeletionPolicy: Retain
