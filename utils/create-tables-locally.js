@@ -2,7 +2,7 @@ const fs = require("fs")
 const { DynamoDB } = require("@aws-sdk/client-dynamodb")
 const yaml = require("js-yaml")
 const cloudformationSchema = require("@serverless/utils/cloudformation-schema")
-const SERVERLESS_CONFIG = __dirname + "/serverless.yml"
+const SERVERLESS_CONFIG = __dirname + "/../serverless.yml"
 
 process.env.AWS_ACCESS_KEY_ID = "dummy-key"
 process.env.AWS_SECRET_ACCESS_KEY = "dummy-secret"
@@ -80,7 +80,6 @@ function applyCustomVariablesToValues(obj) {
     logicalId,
     applyCustomVariablesToValues(definition),
   ])
-  console.log(JSON.stringify(tables, null, 2))
   const existingTables = (await ddb.listTables({})).TableNames
   for await ([logicalId, definition] of tables) {
     const {

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup:dynamodb": "node create-tables-locally.js",
+    "setup:dynamodb": "node utils/create-tables-locally.js",
     "up": "docker-compose up -d",
     "postup": "npm run setup:dynamodb",
     "down": "docker-compose down",
