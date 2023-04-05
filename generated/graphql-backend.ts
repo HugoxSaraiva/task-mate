@@ -62,7 +62,7 @@ export type QueryTasksArgs = {
 
 export type Task = {
   __typename?: 'Task';
-  id: Scalars['Int'];
+  id: Scalars['ID'];
   status: TaskStatus;
   title: Scalars['String'];
 };
@@ -152,7 +152,6 @@ export type ResolversTypes = {
   CreateTaskInput: CreateTaskInput;
   DeleteTaskInput: DeleteTaskInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -167,7 +166,6 @@ export type ResolversParentTypes = {
   CreateTaskInput: CreateTaskInput;
   DeleteTaskInput: DeleteTaskInput;
   ID: Scalars['ID'];
-  Int: Scalars['Int'];
   Mutation: {};
   Query: {};
   String: Scalars['String'];
@@ -187,7 +185,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type TaskResolvers<ContextType = any, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['TaskStatus'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

@@ -63,7 +63,7 @@ export type QueryTasksArgs = {
 
 export type Task = {
   __typename?: 'Task';
-  id: Scalars['Int'];
+  id: Scalars['ID'];
   status: TaskStatus;
   title: Scalars['String'];
 };
@@ -84,35 +84,35 @@ export type CreateTaskMutationVariables = Exact<{
 }>;
 
 
-export type CreateTaskMutation = { __typename?: 'Mutation', createTask?: { __typename?: 'Task', id: number, status: TaskStatus, title: string } | null };
+export type CreateTaskMutation = { __typename?: 'Mutation', createTask?: { __typename?: 'Task', id: string, status: TaskStatus, title: string } | null };
 
 export type DeleteTaskMutationVariables = Exact<{
   input: DeleteTaskInput;
 }>;
 
 
-export type DeleteTaskMutation = { __typename?: 'Mutation', deleteTask?: { __typename?: 'Task', id: number, status: TaskStatus, title: string } | null };
+export type DeleteTaskMutation = { __typename?: 'Mutation', deleteTask?: { __typename?: 'Task', id: string, status: TaskStatus, title: string } | null };
 
 export type TaskQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type TaskQuery = { __typename?: 'Query', task?: { __typename?: 'Task', id: number, status: TaskStatus, title: string } | null };
+export type TaskQuery = { __typename?: 'Query', task?: { __typename?: 'Task', id: string, status: TaskStatus, title: string } | null };
 
 export type TasksQueryVariables = Exact<{
   status?: InputMaybe<TaskStatus>;
 }>;
 
 
-export type TasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', id: number, status: TaskStatus, title: string }> };
+export type TasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', id: string, status: TaskStatus, title: string }> };
 
 export type UpdateTaskMutationVariables = Exact<{
   input: UpdateTaskInput;
 }>;
 
 
-export type UpdateTaskMutation = { __typename?: 'Mutation', updateTask?: { __typename?: 'Task', id: number, status: TaskStatus, title: string } | null };
+export type UpdateTaskMutation = { __typename?: 'Mutation', updateTask?: { __typename?: 'Task', id: string, status: TaskStatus, title: string } | null };
 
 
 export const CreateTaskDocument = gql`

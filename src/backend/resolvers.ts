@@ -1,100 +1,58 @@
 import sql, { Sql, empty, join } from "sql-template-tag"
 import { Resolvers, Task, TaskStatus } from "../../generated/graphql-backend"
 import { GraphQLError } from "graphql"
-import { getFistElementSafe } from "@/lib/utils"
 import { Context } from "./context"
-import { TaskDbRow } from "./db"
+import * as TaskRepository from "./models/task"
+import { sortBy } from "lodash"
+const USER_ID = "1"
 
-export class TaskSelector {
-  constructor(private db: Context["db"]) {}
-  getById: (id: TaskDbRow["id"]) => Promise<Task | null> = async (id) => {
-    const tasks = await getDbQueryResult<TaskDbRow[]>(
-      this.db,
-      sql`SELECT id, title, task_status FROM tasks WHERE id = ${id};`
-    )
-    const task = getFistElementSafe(tasks)
-    return task
-      ? { id: task.id, title: task.title, status: task.task_status }
-      : null
-  }
-}
-
-export async function getDbQueryResult<TResult>(
-  db: Context["db"],
-  query: Sql
-): Promise<TResult> {
-  await db.connect()
-  const dbQueryResult = await db.query(query)
-  await db.clean()
-  const result = dbQueryResult.rows
-  return result
+function mapStatusToTaskStatus<T extends { status: string }>(input: T) {
+  return { ...input, status: input.status as TaskStatus }
 }
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    async tasks(_, { status }, context) {
-      const { db } = context
-      const tasks = await getDbQueryResult<TaskDbRow[]>(
-        db,
-        sql`SELECT id, title, task_status FROM tasks ${
-          status ? sql`WHERE task_status = ${status}` : empty
-        } ORDER BY id DESC;`
-      )
-      return tasks.map((task) => ({
-        id: task.id,
-        title: task.title,
-        status: task.task_status,
-      }))
+    async tasks(_, { status }) {
+      return TaskRepository.getAllTasksForUser({
+        userId: USER_ID,
+        status: status ?? undefined,
+      })
+        .then((tasks) =>
+          sortBy(tasks, [(task) => task.status, (task) => task.updatedAt])
+        )
+        .then((tasks) => tasks.map(mapStatusToTaskStatus))
     },
     async task(_, { id }, { db }) {
-      const selector = new TaskSelector(db)
-      return selector.getById(Number(id))
+      return TaskRepository.getTaskById(id).then(mapStatusToTaskStatus)
     },
   },
   Mutation: {
     async createTask(_, { input: { title } }, { db }) {
-      const taskId = await getDbQueryResult<{ id: number }[]>(
-        db,
-        sql`INSERT INTO tasks (title, task_status) VALUES (${title}, ${TaskStatus.Active}) RETURNING id;`
-      ).then((idsObj) => getFistElementSafe(idsObj)?.id)
-      if (!taskId) {
+      const taskCreated = await TaskRepository.createTask({
+        title,
+        status: TaskStatus.Active,
+        userId: USER_ID,
+      })
+      if (!taskCreated) {
         return null
       }
-      return { id: taskId, title: title, status: TaskStatus.Active }
+      return mapStatusToTaskStatus(taskCreated)
     },
     async updateTask(_, { input: { id, title, status } }, { db }) {
       if (!title && !status) {
         throw new GraphQLError("At least one argument to update must be sent")
       }
-      const selector = new TaskSelector(db)
-      const task = await selector.getById(Number(id))
-      if (!task) {
-        throw new GraphQLError("Could not find task")
-      }
-      const result = await getDbQueryResult<[]>(
-        db,
-        sql`UPDATE tasks SET ${join(
-          [
-            title ? sql`title=${title}` : empty,
-            title && status ? ` , ` : empty,
-            status ? sql`task_status=${status}` : empty,
-          ],
-          " "
-        )} WHERE id=${id};`
-      )
-      return selector.getById(Number(id))
+      const updatedTask = await TaskRepository.updateTask({
+        id,
+        title: title ?? undefined,
+        status: status ?? undefined,
+        userId: USER_ID,
+      })
+      return mapStatusToTaskStatus(updatedTask)
     },
     async deleteTask(_, { input: { id } }, { db }) {
-      const selector = new TaskSelector(db)
-      const taskToBeDeleted = await selector.getById(Number(id))
-      if (!taskToBeDeleted) {
-        throw new GraphQLError("Could not find task")
-      }
-      const result = await getDbQueryResult<[]>(
-        db,
-        sql`DELETE FROM tasks WHERE id=${id};`
-      )
-      return taskToBeDeleted
+      const taskDeleted = await TaskRepository.deleteTask(USER_ID, id)
+      return mapStatusToTaskStatus(taskDeleted)
     },
   },
 }

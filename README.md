@@ -22,6 +22,34 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Usage
+
+### Deployment
+
+Install dependencies with:
+
+```
+npm install
+```
+
+and then deploy with:
+
+```
+serverless deploy
+```
+
+After running deploy, you should see output similar to:
+
+```bash
+Deploying aws-node-express-dynamodb-api-project to stage dev (us-east-1)
+
+✔ Service deployed to stack aws-node-express-dynamodb-api-project-dev (196s)
+
+endpoint: ANY - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com
+functions:
+  api: aws-node-express-dynamodb-api-project-dev-api (766 kB)
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
