@@ -18,7 +18,7 @@ export const resolvers: Resolvers<Context> = {
         status: status ?? undefined,
       })
         .then((tasks) =>
-          sortBy(tasks, [(task) => task.status, (task) => task.updatedAt])
+          sortBy(tasks, [(task) => -new Date(task.updatedAt).getTime()])
         )
         .then((tasks) => tasks.map(mapStatusToTaskStatus))
     },
