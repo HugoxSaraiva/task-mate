@@ -5,9 +5,10 @@ import TaskListItem from "./TaskListItem"
 
 interface Props {
   tasks: Task[]
+  onUpdate: () => void
 }
 
-const TaskList: React.FC<Props> = ({ tasks }) => {
+const TaskList: React.FC<Props> = ({ tasks, onUpdate }) => {
   return (
     <ul className="task-list">
       {tasks.map((task) => {
@@ -15,6 +16,7 @@ const TaskList: React.FC<Props> = ({ tasks }) => {
           <TaskListItem
             key={task.id}
             task={task}
+            onUpdate={onUpdate}
           />
         )
       })}

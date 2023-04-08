@@ -40,7 +40,14 @@ export default function QueryResult<T extends any>({
       </SpinnerContainer>
     )
   } else if (loading && data) {
-    return <>{children}</>
+    return (
+      <>
+        <>{children}</>
+        <SpinnerContainer>
+          <Spinner />
+        </SpinnerContainer>
+      </>
+    )
   }
   // If called is undefined, it means that the query is not lazy
   if (called === false) {

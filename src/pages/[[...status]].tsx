@@ -56,7 +56,10 @@ export default function Home() {
         loading={loading}
         data={data}
       >
-        <TaskList tasks={data?.tasks!} />
+        <TaskList
+          tasks={data?.tasks!}
+          onUpdate={refetch}
+        />
       </QueryResult>
       <TaskFilter status={status} />
     </div>

@@ -10,9 +10,10 @@ import { Reference } from "@apollo/client"
 
 interface Props {
   task: Task
+  onUpdate: () => void
 }
 
-const TaskListItem: React.FC<Props> = ({ task }) => {
+const TaskListItem: React.FC<Props> = ({ task, onUpdate }) => {
   const [deleteTask, { loading, error }] = useDeleteTaskMutation({
     variables: { input: { id: String(task.id) } },
     errorPolicy: "all",
@@ -56,6 +57,7 @@ const TaskListItem: React.FC<Props> = ({ task }) => {
   ) => {
     try {
       await deleteTask()
+      onUpdate()
     } catch (error) {
       // Log the error
       console.log(error)
@@ -73,6 +75,7 @@ const TaskListItem: React.FC<Props> = ({ task }) => {
         variables: { input: { id: String(task.id), status: newStatus } },
       })
       setStatus(newStatus)
+      onUpdate()
     } catch (error) {}
   }
 
