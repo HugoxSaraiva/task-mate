@@ -7,7 +7,7 @@ export const typeDefs = gql`
   }
 
   type Task {
-    id: Int!
+    id: ID!
     title: String!
     status: TaskStatus!
   }

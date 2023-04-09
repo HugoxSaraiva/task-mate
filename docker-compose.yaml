@@ -1,13 +1,9 @@
-# Use postgres/example user/password credentials
-version: "3.1"
-
+version: "3.8"
 services:
-  postgres:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: development
-      POSTGRES_PASSWORD: development
-      POSTGRES_DB: task_mate
+  dynamodb:
+    image: "amazon/dynamodb-local:latest"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory -port 8001"
+    container_name: dynamodb-local
     ports:
-      - 127.0.0.1:5432:5432
+      - "8001:8001"
+    working_dir: /home/dynamodblocal
